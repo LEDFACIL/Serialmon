@@ -12,7 +12,7 @@ body {
 }
 
 .container {
-    max-width: 900px;
+    max-width: 1200px;  /* ← Más ancho */
     margin: 0 auto;
     background: white;
     border-radius: 15px;
@@ -128,6 +128,7 @@ header p {
     border: 1px solid #e9ecef;
     border-radius: 8px;
     overflow: hidden;
+    min-height: 500px; /* ← Mayor altura mínima */
 }
 
 .terminal-header {
@@ -141,22 +142,44 @@ header p {
 }
 
 .terminal {
-    height: 400px;
+    height: 500px; /* ← Más alto */
     background: #1a1a1a;
     color: #00ff00;
-    padding: 20px;
+    padding: 25px; /* ← Más padding */
     font-family: 'Courier New', monospace;
-    font-size: 14px;
-    line-height: 1.4;
+    font-size: 15px; /* ← Texto ligeramente más grande */
+    line-height: 1.6; /* ← Más espacio entre líneas */
     overflow-y: auto;
+    overflow-x: auto; /* ← Scroll horizontal si es necesario */
     white-space: pre-wrap;
     word-wrap: break-word;
+    word-break: break-word; /* ← Mejor manejo de palabras largas */
+}
+
+/* Estilos específicos para el contenido del terminal */
+.command-outgoing {
+    color: #ffa500 !important; /* Naranja para comandos enviados */
+    margin-bottom: 8px;
+    padding: 4px 0;
+}
+
+.data-incoming {
+    color: #87ceeb !important; /* Azul claro para datos recibidos */
+    margin-bottom: 4px;
+    padding: 2px 0;
+}
+
+/* Mejorar la legibilidad de líneas largas */
+.terminal div {
+    max-width: 100%;
+    overflow-wrap: break-word;
 }
 
 .input-container {
     display: flex;
     gap: 15px;
     padding: 0 25px 25px;
+    align-items: stretch;
 }
 
 #commandInput {
@@ -165,7 +188,10 @@ header p {
     border: 2px solid #e9ecef;
     border-radius: 8px;
     font-size: 16px;
+    font-family: 'Courier New', monospace; /* ← Misma fuente que terminal */
     transition: border-color 0.3s ease;
+    min-height: 50px; /* ← Más alto el input */
+    resize: vertical; /* ← Permite ajustar altura */
 }
 
 #commandInput:focus {
@@ -186,6 +212,7 @@ details {
     border: 1px solid #e9ecef;
     border-radius: 8px;
     padding: 15px;
+    background: #f8f9fa;
 }
 
 summary {
@@ -200,11 +227,12 @@ details ol {
 
 details li {
     margin-bottom: 8px;
+    line-height: 1.5;
 }
 
 /* Scrollbar personalizado para terminal */
 .terminal::-webkit-scrollbar {
-    width: 8px;
+    width: 12px; /* ← Scrollbar más ancho */
 }
 
 .terminal::-webkit-scrollbar-track {
@@ -213,15 +241,60 @@ details li {
 
 .terminal::-webkit-scrollbar-thumb {
     background: #555;
-    border-radius: 4px;
+    border-radius: 6px;
+    border: 2px solid #2d2d2d;
 }
 
 .terminal::-webkit-scrollbar-thumb:hover {
     background: #777;
 }
 
-/* Responsive */
+/* Scrollbar horizontal */
+.terminal::-webkit-scrollbar:horizontal {
+    height: 12px;
+}
+
+/* Mejorar el aspecto de los mensajes en el terminal */
+.terminal .timestamp {
+    color: #888;
+    font-size: 0.9em;
+}
+
+.terminal .error {
+    color: #ff6b6b;
+    background: rgba(255, 107, 107, 0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin: 2px 0;
+}
+
+.terminal .success {
+    color: #51cf66;
+    background: rgba(81, 207, 102, 0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin: 2px 0;
+}
+
+/* Responsive - Ajustes para pantallas grandes */
+@media (min-width: 1400px) {
+    .container {
+        max-width: 1400px;
+    }
+    
+    .terminal {
+        height: 600px; /* ← Aún más alto en pantallas grandes */
+        font-size: 16px; /* ← Texto más grande */
+        padding: 30px; /* ← Más espacio interno */
+    }
+}
+
 @media (max-width: 768px) {
+    .container {
+        margin: 10px;
+        border-radius: 10px;
+    }
+    
     .controls {
         flex-direction: column;
         align-items: stretch;
@@ -232,7 +305,23 @@ details li {
     }
     
     .terminal {
-        height: 300px;
-        font-size: 12px;
+        height: 400px;
+        font-size: 14px;
+        padding: 15px;
     }
+    
+    #commandInput {
+        min-height: 60px; /* ← Más alto en móviles para mejor usabilidad */
+    }
+}
+
+/* Efectos de smooth scrolling */
+.terminal {
+    scroll-behavior: smooth;
+}
+
+/* Mejorar la visibilidad del focus */
+.btn:focus, #commandInput:focus, .select:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
 }
