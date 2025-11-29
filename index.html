@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serial Monitor Online - ESP32</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔧 Serial Monitor Online</h1>
+            <p>Configura tu ESP32 directamente desde el navegador</p>
+        </header>
+
+        <div class="connection-panel">
+            <div id="status" class="status disconnected">
+                <span class="status-icon">🔴</span>
+                <span class="status-text">Desconectado</span>
+            </div>
+            
+            <div class="controls">
+                <button id="connectBtn" class="btn btn-primary">🔗 Conectar Puerto Serial</button>
+                <button id="disconnectBtn" class="btn btn-secondary" disabled>🔴 Desconectar</button>
+                <select id="baudrate" class="select">
+                    <option value="9600">9600 baud</option>
+                    <option value="115200" selected>115200 baud</option>
+                    <option value="57600">57600 baud</option>
+                    <option value="38400">38400 baud</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="terminal-container">
+            <div class="terminal-header">
+                <span>Terminal</span>
+                <button id="clearBtn" class="btn btn-small">🗑️ Limpiar</button>
+            </div>
+            <div id="terminal" class="terminal"></div>
+        </div>
+
+        <div class="input-container">
+            <input type="text" id="commandInput" placeholder="Escribe tu comando de configuración..." disabled>
+            <button id="sendBtn" class="btn btn-primary" disabled>📤 Enviar</button>
+        </div>
+
+        <div class="help-section">
+            <details>
+                <summary>💡 Instrucciones de uso</summary>
+                <ol>
+                    <li>Conecta tu ESP32 via USB</li>
+                    <li>Haz clic en "Conectar Puerto Serial"</li>
+                    <li>Selecciona el puerto de tu ESP32 en el diálogo</li>
+                    <li>Envía comandos de configuración</li>
+                </ol>
+                <p><strong>Requisitos:</strong> Chrome/Edge 89+ en Windows/Mac/Linux</p>
+            </details>
+        </div>
+    </div>
+
+    <script src="serial.js"></script>
+</body>
+</html>
