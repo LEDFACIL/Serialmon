@@ -325,3 +325,48 @@ details li {
     outline: 2px solid #007bff;
     outline-offset: 2px;
 }
+
+/* AGREGAR ESTOS ESTILOS AL ARCHIVO EXISTENTE */
+
+.terminal {
+    height: 500px;
+    background: #1a1a1a;
+    color: #00ff00;
+    padding: 25px;
+    font-family: 'Courier New', monospace;
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-y: auto;
+    overflow-x: auto;
+    white-space: pre-wrap; /* ← MANTENER */
+    word-wrap: break-word;
+    word-break: keep-all; /* ← CAMBIAR de break-word a keep-all */
+}
+
+/* NUEVO: Estilo específico para mantener formato de menú */
+.terminal-line {
+    display: block;
+    min-height: 1.6em;
+    white-space: pre;
+    font-family: 'Courier New', monospace;
+    margin: 0;
+    padding: 0;
+}
+
+/* Mejorar la visualización de texto preformateado */
+.terminal pre {
+    margin: 0;
+    padding: 0;
+    font-family: 'Courier New', monospace;
+    white-space: pre;
+    display: block;
+}
+
+/* Para líneas individuales */
+.line {
+    display: block;
+    min-height: 1.6em;
+    white-space: pre;
+    font-family: 'Courier New', monospace;
+}
+
