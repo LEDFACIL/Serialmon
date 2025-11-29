@@ -110,27 +110,44 @@ class SerialMonitor {
     }
 
     displayData(data, type = 'incoming') {
-        const div = document.createElement('div');
-        
-        if (typeof data === 'string') {
-            div.textContent = data;
-        } else {
-            // Convertir Uint8Array a string
-            const decoder = new TextDecoder();
-            div.textContent = decoder.decode(data);
-        }
-        
-        if (type === 'outgoing') {
-            div.className = 'command-outgoing';
-            div.style.color = '#ffa500'; // Naranja para comandos enviados
-        } else {
-            div.className = 'data-incoming';
-            div.style.color = '#87ceeb'; // Azul claro para datos recibidos
-        }
-        
-        this.terminal.appendChild(div);
+    const div = document.createElement('div');
+    const timestamp = new Date().toLocaleTimeString();
+    
+    if (typeof data === 'string') {
+        // Limpiar y formatear el texto
+        const cleanData = data.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+        div.textContent = cleanData;
+    } else {
+        // Convertir Uint8Array a string
+        const decoder = new TextDecoder();
+        const text = decoder.decode(data);
+        const cleanText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+        div.textContent = cleanText;
+    }
+    
+    // Aplicar estilos según el tipo
+    if (type === 'outgoing') {
+        div.className = 'command-outgoing';
+        // Agregar indicador de comando enviado
+        div.innerHTML = `<span style="color: #ffa500;">[${timestamp}] &gt; </span>${div.innerHTML}`;
+    } else if (type === 'error') {
+        div.className = 'error';
+    } else if (type === 'success') {
+        div.className = 'success';
+    } else {
+        div.className = 'data-incoming';
+        // Agregar timestamp a datos entrantes
+        div.innerHTML = `<span style="color: #888;">[${timestamp}] </span>${div.innerHTML}`;
+    }
+    
+    this.terminal.appendChild(div);
+    
+    // Auto-scroll solo si ya está cerca del final
+    const isNearBottom = this.terminal.scrollHeight - this.terminal.clientHeight <= this.terminal.scrollTop + 50;
+    if (isNearBottom) {
         this.terminal.scrollTop = this.terminal.scrollHeight;
     }
+}
 
     async disconnect() {
         this.isConnected = false;
@@ -200,4 +217,5 @@ class SerialMonitor {
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
     new SerialMonitor();
+
 });
