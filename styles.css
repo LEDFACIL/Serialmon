@@ -12,7 +12,7 @@ body {
 }
 
 .container {
-    max-width: 1200px;  /* ← Más ancho */
+    max-width: 1200px;
     margin: 0 auto;
     background: white;
     border-radius: 15px;
@@ -128,7 +128,7 @@ header p {
     border: 1px solid #e9ecef;
     border-radius: 8px;
     overflow: hidden;
-    min-height: 500px; /* ← Mayor altura mínima */
+    min-height: 500px;
 }
 
 .terminal-header {
@@ -142,37 +142,39 @@ header p {
 }
 
 .terminal {
-    height: 500px; /* ← Más alto */
+    height: 500px;
     background: #1a1a1a;
-    color: #00ff00;
-    padding: 25px; /* ← Más padding */
+    color: #87ceeb;
+    padding: 25px;
     font-family: 'Courier New', monospace;
-    font-size: 15px; /* ← Texto ligeramente más grande */
-    line-height: 1.6; /* ← Más espacio entre líneas */
+    font-size: 15px;
+    line-height: 1.6;
     overflow-y: auto;
-    overflow-x: auto; /* ← Scroll horizontal si es necesario */
+    overflow-x: auto;
     white-space: pre-wrap;
     word-wrap: break-word;
-    word-break: break-word; /* ← Mejor manejo de palabras largas */
 }
 
-/* Estilos específicos para el contenido del terminal */
-.command-outgoing {
-    color: #ffa500 !important; /* Naranja para comandos enviados */
-    margin-bottom: 8px;
-    padding: 4px 0;
+.terminal-line {
+    display: block;
+    min-height: 1.6em;
+    white-space: pre;
+    font-family: 'Courier New', monospace;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    font-size: 15px;
+    color: #87ceeb;
 }
 
-.data-incoming {
-    color: #87ceeb !important; /* Azul claro para datos recibidos */
-    margin-bottom: 4px;
-    padding: 2px 0;
-}
-
-/* Mejorar la legibilidad de líneas largas */
-.terminal div {
-    max-width: 100%;
-    overflow-wrap: break-word;
+.terminal pre {
+    margin: 0;
+    padding: 0;
+    font-family: 'Courier New', monospace;
+    white-space: pre;
+    display: block;
+    line-height: 1.6;
+    color: #87ceeb;
 }
 
 .input-container {
@@ -188,10 +190,10 @@ header p {
     border: 2px solid #e9ecef;
     border-radius: 8px;
     font-size: 16px;
-    font-family: 'Courier New', monospace; /* ← Misma fuente que terminal */
+    font-family: 'Courier New', monospace;
     transition: border-color 0.3s ease;
-    min-height: 50px; /* ← Más alto el input */
-    resize: vertical; /* ← Permite ajustar altura */
+    min-height: 50px;
+    resize: vertical;
 }
 
 #commandInput:focus {
@@ -230,9 +232,8 @@ details li {
     line-height: 1.5;
 }
 
-/* Scrollbar personalizado para terminal */
 .terminal::-webkit-scrollbar {
-    width: 12px; /* ← Scrollbar más ancho */
+    width: 12px;
 }
 
 .terminal::-webkit-scrollbar-track {
@@ -249,43 +250,19 @@ details li {
     background: #777;
 }
 
-/* Scrollbar horizontal */
 .terminal::-webkit-scrollbar:horizontal {
     height: 12px;
 }
 
-/* Mejorar el aspecto de los mensajes en el terminal */
-.terminal .timestamp {
-    color: #888;
-    font-size: 0.9em;
-}
-
-.terminal .error {
-    color: #ff6b6b;
-    background: rgba(255, 107, 107, 0.1);
-    padding: 4px 8px;
-    border-radius: 4px;
-    margin: 2px 0;
-}
-
-.terminal .success {
-    color: #51cf66;
-    background: rgba(81, 207, 102, 0.1);
-    padding: 4px 8px;
-    border-radius: 4px;
-    margin: 2px 0;
-}
-
-/* Responsive - Ajustes para pantallas grandes */
 @media (min-width: 1400px) {
     .container {
         max-width: 1400px;
     }
     
     .terminal {
-        height: 600px; /* ← Aún más alto en pantallas grandes */
-        font-size: 16px; /* ← Texto más grande */
-        padding: 30px; /* ← Más espacio interno */
+        height: 600px;
+        font-size: 16px;
+        padding: 30px;
     }
 }
 
@@ -311,62 +288,15 @@ details li {
     }
     
     #commandInput {
-        min-height: 60px; /* ← Más alto en móviles para mejor usabilidad */
+        min-height: 60px;
     }
 }
 
-/* Efectos de smooth scrolling */
 .terminal {
     scroll-behavior: smooth;
 }
 
-/* Mejorar la visibilidad del focus */
 .btn:focus, #commandInput:focus, .select:focus {
     outline: 2px solid #007bff;
     outline-offset: 2px;
 }
-
-/* AGREGAR ESTOS ESTILOS AL ARCHIVO EXISTENTE */
-
-.terminal {
-    height: 500px;
-    background: #1a1a1a;
-    color: #00ff00;
-    padding: 25px;
-    font-family: 'Courier New', monospace;
-    font-size: 15px;
-    line-height: 1.6;
-    overflow-y: auto;
-    overflow-x: auto;
-    white-space: pre-wrap; /* ← MANTENER */
-    word-wrap: break-word;
-    word-break: keep-all; /* ← CAMBIAR de break-word a keep-all */
-}
-
-/* NUEVO: Estilo específico para mantener formato de menú */
-.terminal-line {
-    display: block;
-    min-height: 1.6em;
-    white-space: pre;
-    font-family: 'Courier New', monospace;
-    margin: 0;
-    padding: 0;
-}
-
-/* Mejorar la visualización de texto preformateado */
-.terminal pre {
-    margin: 0;
-    padding: 0;
-    font-family: 'Courier New', monospace;
-    white-space: pre;
-    display: block;
-}
-
-/* Para líneas individuales */
-.line {
-    display: block;
-    min-height: 1.6em;
-    white-space: pre;
-    font-family: 'Courier New', monospace;
-}
-
