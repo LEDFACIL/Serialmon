@@ -9,12 +9,6 @@ class SerialMonitor {
         this.initializeElements();
         this.attachEventListeners();
         this.checkBrowserSupport();
-        
-        window.addEventListener('beforeunload', () => {
-            if (this.isConnected) {
-                this.disconnect();
-            }
-        });
     }
 
     initializeElements() {
@@ -41,18 +35,40 @@ class SerialMonitor {
 
     checkBrowserSupport() {
         if (!('serial' in navigator)) {
-            this.showError('Web Serial API no es soportada por este navegador. Usa Chrome, Edge u Opera.');
+            this.showError('❌ Web Serial API no es soportada por este navegador. Usa Chrome, Edge u Opera.');
             this.connectBtn.disabled = true;
+            this.connectBtn.textContent = '❌ Navegador no compatible';
+        } else {
+            this.showMessage('✅ Navegador compatible con Web Serial API', 'success');
         }
     }
 
     async connect() {
         try {
+            console.log('Iniciando conexión serial...');
+            
+            // Mostrar mensaje de ayuda
+            this.showMessage('🔄 Buscando puertos seriales disponibles...', 'info');
+            
+            // Solicitar puerto al usuario - ESTA ES LA PARTE CLAVE
             this.port = await navigator.serial.requestPort();
+            console.log('Puerto seleccionado:', this.port);
             
             const baudRate = parseInt(this.baudrateSelect.value);
-            await this.port.open({ baudRate });
+            this.showMessage(`🔧 Configurando puerto a ${baudRate} baud...`, 'info');
             
+            // Configurar el puerto
+            await this.port.open({ 
+                baudRate: baudRate,
+                dataBits: 8,
+                stopBits: 1,
+                parity: 'none',
+                flowControl: 'none'
+            });
+            
+            console.log('Puerto abierto exitosamente');
+            
+            // Configurar evento de desconexión
             this.port.addEventListener('disconnect', () => {
                 console.log('Puerto desconectado físicamente');
                 this.handleDisconnection();
@@ -60,128 +76,131 @@ class SerialMonitor {
             
             this.isConnected = true;
             this.updateUI();
-            this.startReading();
             
             this.showMessage('✅ Conectado al ESP32 - Listo para recibir comandos', 'success');
             
+            // Iniciar lectura en segundo plano
+            this.startReading().catch(error => {
+                console.error('Error en lectura:', error);
+                this.handleError(error);
+            });
+            
         } catch (error) {
-            this.handleError(error);
+            console.error('Error en conexión:', error);
+            if (error.name === 'NotFoundError') {
+                this.showError('❌ No se seleccionó ningún puerto');
+            } else if (error.name === 'InvalidStateError') {
+                this.showError('❌ El puerto ya está abierto');
+            } else if (error.name === 'NetworkError') {
+                this.showError('❌ Error de red al acceder al puerto');
+            } else {
+                this.showError(`❌ Error de conexión: ${error.message}`);
+            }
         }
     }
 
     async startReading() {
+        if (!this.port || !this.port.readable) {
+            throw new Error('Puerto no disponible para lectura');
+        }
+
         try {
-            while (this.port.readable && this.isConnected) {
-                this.reader = this.port.readable.getReader();
-                
+            this.reader = this.port.readable.getReader();
+            const decoder = new TextDecoder();
+            
+            console.log('Iniciando lectura continua...');
+            
+            while (this.isConnected) {
                 try {
-                    while (true) {
-                        const { value, done } = await this.reader.read();
-                        
-                        if (done) {
-                            console.log('Lectura finalizada - puerto probablemente desconectado');
-                            this.handleDisconnection();
-                            break;
-                        }
-                        
-                        if (value && value.length > 0) {
-                            this.displayData(value, 'incoming');
-                        }
+                    const { value, done } = await this.reader.read();
+                    
+                    if (done) {
+                        console.log('Lectura finalizada por el sistema');
+                        break;
                     }
-                } catch (error) {
-                    console.error('Error en lectura continua:', error);
+                    
+                    if (value && value.length > 0) {
+                        const text = decoder.decode(value);
+                        this.processIncomingData(text);
+                    }
+                    
+                } catch (readError) {
                     if (this.isConnected) {
-                        this.handleDisconnection();
-                    }
-                } finally {
-                    if (this.reader) {
-                        this.reader.releaseLock();
-                        this.reader = null;
+                        console.error('Error leyendo datos:', readError);
+                        break;
                     }
                 }
             }
+            
         } catch (error) {
             console.error('Error en startReading:', error);
-            this.handleDisconnection();
+            throw error;
+        } finally {
+            if (this.reader) {
+                this.reader.releaseLock();
+                this.reader = null;
+            }
         }
     }
 
-    displayData(data, type = 'incoming') {
-        try {
-            if (!this.terminal) return;
-
-            let text = '';
-            
-            if (typeof data === 'string') {
-                text = data;
+    processIncomingData(text) {
+        if (!this.inputBuffer) {
+            this.inputBuffer = '';
+        }
+        
+        this.inputBuffer += text;
+        
+        // Dividir en líneas pero mantener el buffer para líneas incompletas
+        const lines = this.inputBuffer.split('\n');
+        
+        // Si el último carácter no es \n, la última línea está incompleta
+        if (!text.endsWith('\n') && lines.length > 0) {
+            this.inputBuffer = lines.pop(); // Guardar la línea incompleta
+        } else {
+            this.inputBuffer = ''; // Reset si terminó con \n
+        }
+        
+        // Procesar líneas completas
+        lines.forEach(line => {
+            if (line === '') {
+                // Línea vacía, solo mostrar salto de línea
+                this.displayData('\n', 'incoming');
             } else {
-                const decoder = new TextDecoder();
-                text = decoder.decode(data);
+                // Mostrar línea con salto de línea
+                this.displayData(line + '\n', 'incoming');
             }
+        });
+    }
 
-            if (!text && text !== '\n') return;
+    displayData(text, type = 'incoming') {
+        try {
+            if (!text || !this.terminal) return;
 
-            if (type === 'incoming') {
-                if (!this.inputBuffer) {
-                    this.inputBuffer = '';
-                }
-                
-                this.inputBuffer += text;
-                
-                const lines = this.inputBuffer.split('\n');
-                
-                if (!text.endsWith('\n')) {
-                    this.inputBuffer = lines.pop();
-                } else {
-                    this.inputBuffer = '';
-                }
-                
-                lines.forEach(line => {
-                    if (line.trim() === '') {
-                        const emptyLine = document.createElement('div');
-                        emptyLine.className = 'terminal-line';
-                        emptyLine.style.height = '1.6em';
-                        this.terminal.appendChild(emptyLine);
-                        return;
-                    }
-                    
-                    const lineDiv = document.createElement('div');
-                    lineDiv.className = 'terminal-line';
-                    lineDiv.style.whiteSpace = 'pre';
-                    lineDiv.style.fontFamily = "'Courier New', monospace";
-                    lineDiv.style.minHeight = '1.6em';
-                    lineDiv.style.color = '#87ceeb';
-                    
-                    lineDiv.textContent = line;
-                    
-                    this.terminal.appendChild(lineDiv);
-                });
-                
-            } else if (type === 'outgoing') {
+            const lineDiv = document.createElement('div');
+            lineDiv.className = 'terminal-line';
+            
+            if (type === 'outgoing') {
+                // Comando enviado por el usuario
                 const timestamp = new Date().toLocaleTimeString();
-                const lineDiv = document.createElement('div');
-                lineDiv.className = 'terminal-line';
-                lineDiv.style.whiteSpace = 'pre';
-                lineDiv.style.fontFamily = "'Courier New', monospace";
-                lineDiv.style.minHeight = '1.6em';
-                lineDiv.style.color = '#ffa500';
-                
                 lineDiv.textContent = `[${timestamp}] > ${text}`;
-                this.terminal.appendChild(lineDiv);
-                
-            } else if (type === 'error' || type === 'success') {
+                lineDiv.style.color = '#ffa500';
+            } else if (type === 'error') {
+                // Mensaje de error
                 const timestamp = new Date().toLocaleTimeString();
-                const lineDiv = document.createElement('div');
-                lineDiv.className = 'terminal-line';
-                lineDiv.style.whiteSpace = 'pre';
-                lineDiv.style.fontFamily = "'Courier New', monospace";
-                lineDiv.style.minHeight = '1.6em';
-                lineDiv.style.color = type === 'error' ? '#ff6b6b' : '#51cf66';
-                
                 lineDiv.textContent = `[${timestamp}] ${text}`;
-                this.terminal.appendChild(lineDiv);
+                lineDiv.style.color = '#ff6b6b';
+            } else if (type === 'success') {
+                // Mensaje de éxito
+                const timestamp = new Date().toLocaleTimeString();
+                lineDiv.textContent = `[${timestamp}] ${text}`;
+                lineDiv.style.color = '#51cf66';
+            } else {
+                // Datos entrantes del ESP32 - SIN TIMESTAMP
+                lineDiv.textContent = text;
+                lineDiv.style.color = '#87ceeb';
             }
-
+            
+            this.terminal.appendChild(lineDiv);
             this.autoScroll();
             
         } catch (error) {
@@ -192,19 +211,15 @@ class SerialMonitor {
     autoScroll() {
         if (!this.terminal) return;
         
-        const threshold = 100;
-        const isNearBottom = this.terminal.scrollHeight - this.terminal.clientHeight <= this.terminal.scrollTop + threshold;
-        
-        if (isNearBottom) {
-            setTimeout(() => {
-                this.terminal.scrollTop = this.terminal.scrollHeight;
-            }, 10);
-        }
+        // Scroll suave al final
+        setTimeout(() => {
+            this.terminal.scrollTop = this.terminal.scrollHeight;
+        }, 10);
     }
 
     async sendCommand() {
-        if (!this.isConnected || !this.port.writable) {
-            this.showError('No hay conexión serial activa');
+        if (!this.isConnected || !this.port || !this.port.writable) {
+            this.showError('❌ No hay conexión serial activa');
             return;
         }
 
@@ -212,34 +227,42 @@ class SerialMonitor {
         if (!command) return;
 
         try {
+            // Mostrar comando en terminal
             this.displayData(command, 'outgoing');
             
-            this.writer = this.port.writable.getWriter();
+            // Enviar comando al ESP32
             const encoder = new TextEncoder();
-            await this.writer.write(encoder.encode(command + '\r\n'));
+            const data = encoder.encode(command + '\r\n'); // \r\n para compatibilidad
+            
+            this.writer = this.port.writable.getWriter();
+            await this.writer.write(data);
             this.writer.releaseLock();
             this.writer = null;
             
+            // Limpiar input
             this.commandInput.value = '';
             this.commandInput.focus();
             
         } catch (error) {
-            this.handleError(error);
+            console.error('Error enviando comando:', error);
+            this.showError(`❌ Error enviando comando: ${error.message}`);
         }
     }
 
     handleDisconnection() {
         if (this.isConnected) {
-            console.log('Manejando desconexión del puerto...');
+            console.log('Manejando desconexión...');
             this.isConnected = false;
             
+            // Limpiar recursos
             if (this.reader) {
                 this.reader.cancel().catch(() => {});
+                this.reader.releaseLock().catch(() => {});
                 this.reader = null;
             }
             
             if (this.writer) {
-                this.writer.releaseLock();
+                this.writer.releaseLock().catch(() => {});
                 this.writer = null;
             }
             
@@ -248,18 +271,21 @@ class SerialMonitor {
                 this.port = null;
             }
             
+            this.inputBuffer = '';
             this.updateUI();
             this.showMessage('🔌 Puerto serial desconectado', 'error');
         }
     }
 
     async disconnect() {
-        console.log('Solicitando desconexión manual...');
+        console.log('Desconexión manual solicitada');
         this.handleDisconnection();
     }
 
     clearTerminal() {
-        this.terminal.innerHTML = '';
+        if (this.terminal) {
+            this.terminal.innerHTML = '';
+        }
         this.inputBuffer = '';
     }
 
@@ -297,11 +323,13 @@ class SerialMonitor {
         this.showError(errorMessage);
         
         if (this.isConnected) {
-            this.disconnect();
+            this.handleDisconnection();
         }
     }
 }
 
+// Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
-    new SerialMonitor();
+    window.serialMonitor = new SerialMonitor();
+    console.log('Serial Monitor inicializado');
 });
