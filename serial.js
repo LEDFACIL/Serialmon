@@ -50,7 +50,7 @@ class SerialMonitor {
             // Mostrar mensaje de ayuda
             this.showMessage('🔄 Buscando puertos seriales disponibles...', 'info');
             
-            // Solicitar puerto al usuario - ESTA ES LA PARTE CLAVE
+            // Solicitar puerto al usuario
             this.port = await navigator.serial.requestPort();
             console.log('Puerto seleccionado:', this.port);
             
