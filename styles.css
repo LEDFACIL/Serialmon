@@ -302,23 +302,24 @@ details li {
 }
 
 .footer {
+    width: 100%;                /* ocupa todo el ancho del bloque */
     background: #2c3e50;        /* igual que el header */
-    color: white;               /* igual que el header */
+    color: white;
     text-align: center;
     padding: 20px;
     font-size: 14px;
-    margin-top: 30px;
-    border-top: 3px solid rgba(255,255,255,0.2);  /* opcional, da estilo */
+    border-top: 3px solid rgba(255,255,255,0.2);
+    margin-top: 0;              /* se pega al bloque */
 }
-
 .footer a {
     color: #fff;
     text-decoration: none;
     font-weight: bold;
 }
-
 .footer a:hover {
     text-decoration: underline;
 }
+
+
 
 
