@@ -56,17 +56,22 @@
                 <p><strong>Requisitos:</strong> Chrome/Edge 89+ en Windows/Mac/Linux</p>
             </details>
         </div>
+    <!-- Pie de página -->
+        <footer class="footer">
+            <span id="year"></span> Serial Monitor Online By 
+            <a href="https://lasso-tech.com/" target="_blank">Lasso-Tech</a>
+        </footer>
     </div>
 
     <script src="serial.js"></script>
 
-        <!-- Pie de página -->
-    <footer class="footer">
-        2025 Serial Monitor Online By 
-        <a href="https://lasso-tech.com/" target="_blank">Lasso-Tech</a>
-    </footer>
+    <script>
+        // Año automático
+        document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
 </body>
 </html>
+
 
 
 
