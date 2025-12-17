@@ -77,7 +77,7 @@ class SerialMonitor {
             this.isConnected = true;
             this.updateUI();
             
-            this.showMessage('✅ Conectado al ESP32 - Listo para recibir comandos', 'success');
+            this.showMessage('✅ Conectado - Listo para recibir comandos', 'success');
             
             // Iniciar lectura en segundo plano
             this.startReading().catch(error => {
@@ -333,3 +333,4 @@ document.addEventListener('DOMContentLoaded', () => {
     window.serialMonitor = new SerialMonitor();
     console.log('Serial Monitor inicializado');
 });
+
