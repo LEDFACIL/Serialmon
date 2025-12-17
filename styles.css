@@ -302,19 +302,20 @@ details li {
 }
 
 .footer {
-    margin-top: 30px;
+    margin: 30px auto 0 auto;   /* centrado y con separación superior */
     width: 2cm;                 /* lo que solicitaste */
-    background-color: #f0f0f0;  /* cámbialo si tu header usa otro color */
+    background: #2c3e50;        /* mismo color que el header */
+    color: white;               /* mismo color de texto */
     padding: 10px;
     text-align: center;
     font-size: 12px;
     border-radius: 5px;
 }
-
-/* Para el enlace */
 .footer a {
-    color: inherit;
+    color: white;
     text-decoration: none;
     font-weight: bold;
 }
-
+.footer a:hover {
+    text-decoration: underline;
+}
