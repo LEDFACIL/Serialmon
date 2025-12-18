@@ -52,13 +52,21 @@ Si tu dispositivo no aparece en la lista, generalmente se debe a que necesita un
 ¿Sabías que con esta misma familia de tecnologías web también **puedes programar microcontroladores**?
 Mira mi serie de videos donde explico cómo programar un **ESP32 directamente desde el navegador**, sin instalar el IDE de Arduino:
 
-[![Ver Playlist en YouTube](https://img.shields.io/badge/▶️_Ver_Playlist_Completa-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/playlist?list=PLyXDLkOhTlfVUzkYBZdUbPJaj_n_1Pc0r)
+[![Ver Playlist en YouTube](https://img.shields.io/badge/▶️_Ver_Flash_WEB_ESP32_Playlist_Completa-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/playlist?list=PLyXDLkOhTlfVUzkYBZdUbPJaj_n_1Pc0r)
 
 ## 👨‍💻 Acerca del Proyecto
 
 Serialmon es un proyecto de código abierto creado para simplificar el desarrollo con microcontroladores. Su objetivo es hacer que la experimentación y el prototipado sean más accesibles para todos.
 
 - **Repo**: [github.com/LEDFACIL/Serialmon](https://github.com/LEDFACIL/Serialmon)
+
+📌Si compartís, por favor respetá la autoría de este contenido, sería un buen gesto dejar un enlace al repo. 😉
+
+📌Podés encontrarme [acá](https://lasso-tech.com/contacto/).
+
+📌Para descargar todos estos recursos de una sola vez, ir al botón verde arriba a la derecha "Code" y luego en el menú que se despliega seleccionar "Download ZIP".
+
+💪 Éxito con eso!!!
 
 ---
 
