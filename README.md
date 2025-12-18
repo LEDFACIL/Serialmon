@@ -2,7 +2,7 @@
 
 **Serial Monitor Online** es una herramienta web gratuita que te permite monitorear y comunicarte con microcontroladores (PICs, Arduino, ESP32, Raspberry Pi Pico, STM, etc.) **directamente desde tu navegador**, sin necesidad de instalar software localmente en tu computadora.
 
-[![Acceder a Serialmon Online](https://img.shields.io/badge/🚀_Acceder_a_Serialmon_Online-007ACC?style=for-the-badge&logo=google-chrome&logoColor=white)](https://ledfacil.github.io/Serialmon/)
+<a href="https://ledfacil.github.io/Serialmon/" target="_blank"><img src="https://img.shields.io/badge/🚀_Acceder_a_Serialmon_Online-007ACC?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Acceder a Serialmon Online"></a>
 
 ## ✨ ¿Por qué usar Serialmon?
 
@@ -15,7 +15,7 @@
 ## 🚀 Empezar en 3 pasos
 
 1.  **Conecta** tu microcontrolador, sistema o dispositivo serial a tu computadora por USB.
-2.  **Abre** [Serialmon](https://ledfacil.github.io/Serialmon/) en tu navegador.
+2.  **Abre** <a href="https://ledfacil.github.io/Serialmon/" target="_blank">Serialmon</a> en tu navegador.
 3.  **Haz clic en "Conectar Puerto Serial"**, selecciona tu puerto COM y ¡listo!
 
 ### 🔍 **¡La selección del puerto es en tiempo real!**
@@ -37,14 +37,14 @@ Si tu dispositivo no aparece en la lista, generalmente se debe a que necesita un
 
 1.  **Reconocimiento básico**: Asegúrate de que el cable USB es de datos y de que el dispositivo tiene alimentación.
 2.  **Instalación de drivers**:
-    - **Arduino UNO/Nano**: Usa el driver **CH340**. [Descargar aquí](https://www.wch-ic.com/downloads/CH341SER_EXE.html).
-    - **ESP32/ESP8266 (NodeMCU)**: Por lo general, no requieren driver adicional en sistemas modernos. Si es necesario, usa el driver **CP210x** o **CH9102**. [Descargar CP210x](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers).
-    - **Dispositivos con FTDI**: [Driver FTDI VCP](https://ftdichip.com/drivers/vcp-drivers/).
+    - **Arduino UNO/Nano**: Usa el driver **CH340**. <a href="https://www.wch-ic.com/downloads/CH341SER_EXE.html" target="_blank">Descargar aquí</a>.
+    - **ESP32/ESP8266 (NodeMCU)**: Por lo general, no requieren driver adicional en sistemas modernos. Si es necesario, usa el driver **CP210x** o **CH9102**. <a href="https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers" target="_blank">Descargar CP210x</a>.
+    - **Dispositivos con FTDI**: <a href="https://ftdichip.com/drivers/vcp-drivers/" target="_blank">Driver FTDI VCP</a>.
 
 > 💡 **Foros de referencia**: Para ayuda específica con drivers, puedes consultar comunidades como:
-> - [Foro de Arduino en español](https://forum.arduino.cc/c/internacional/espanol/138)
-> - [ESP32.com Forum](https://www.esp32.com/)
-> - [Stack Overflow](https://stackoverflow.com/questions/tagged/serial-port)
+> - <a href="https://forum.arduino.cc/c/internacional/espanol/138" target="_blank">Foro de Arduino en español</a>
+> - <a href="https://www.esp32.com/" target="_blank">ESP32.com Forum</a>
+> - <a href="https://stackoverflow.com/questions/tagged/serial-port" target="_blank">Stack Overflow</a>
 
 ## 📚 Aprende más y descubre
 
@@ -52,17 +52,17 @@ Si tu dispositivo no aparece en la lista, generalmente se debe a que necesita un
 ¿Sabías que con esta misma familia de tecnologías web también **puedes programar microcontroladores**?
 Mira mi serie de videos donde explico cómo programar un **ESP32 directamente desde el navegador**, sin instalar el IDE de Arduino:
 
-[![Ver Playlist en YouTube](https://img.shields.io/badge/▶️_Ver_Flash_WEB_ESP32_Playlist_Completa-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/playlist?list=PLyXDLkOhTlfVUzkYBZdUbPJaj_n_1Pc0r)
+<a href="https://www.youtube.com/playlist?list=PLyXDLkOhTlfVUzkYBZdUbPJaj_n_1Pc0r" target="_blank"><img src="https://img.shields.io/badge/▶️_Ver_Flash_WEB_ESP32_Playlist_Completa-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="Ver Playlist en YouTube"></a>
 
 ## 👨‍💻 Acerca del Proyecto
 
 Serialmon es un proyecto de código abierto creado para simplificar el desarrollo con microcontroladores. Su objetivo es hacer que la experimentación y el prototipado sean más accesibles para todos.
 
-- **Repo**: [github.com/LEDFACIL/Serialmon](https://github.com/LEDFACIL/Serialmon)
+- **Repo**: <a href="https://github.com/LEDFACIL/Serialmon" target="_blank">github.com/LEDFACIL/Serialmon</a>
 
 📌Si compartís, por favor respetá la autoría de este contenido, sería un buen gesto dejar un enlace al repo. 😉
 
-📌Podés encontrarme [acá](https://lasso-tech.com/contacto/).
+📌Podés encontrarme <a href="https://lasso-tech.com/contacto/" target="_blank">acá</a>.
 
 📌Para descargar todos estos recursos de una sola vez, ir al botón verde arriba a la derecha "Code" y luego en el menú que se despliega seleccionar "Download ZIP".
 
@@ -70,5 +70,4 @@ Serialmon es un proyecto de código abierto creado para simplificar el desarroll
 
 ---
 
-### 🤓 By **Damián G. Lasso** 🌐 [LASSO-TECH](https://lasso-tech.com/) Electrónica aplicada & soluciones.
-
+### 🤓 By **Damián G. Lasso** 🌐 <a href="https://lasso-tech.com/" target="_blank">LASSO-TECH</a> Electrónica aplicada & soluciones.
