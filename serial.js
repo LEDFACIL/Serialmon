@@ -13,7 +13,6 @@ class SerialMonitor {
 
     initializeElements() {
         this.connectBtn = document.getElementById('connectBtn');
-        this.disconnectBtn = document.getElementById('disconnectBtn');
         this.clearBtn = document.getElementById('clearBtn');
         this.sendBtn = document.getElementById('sendBtn');
         this.commandInput = document.getElementById('commandInput');
@@ -24,7 +23,6 @@ class SerialMonitor {
 
     attachEventListeners() {
         this.connectBtn.addEventListener('click', () => this.connect());
-        this.disconnectBtn.addEventListener('click', () => this.disconnect());
         this.clearBtn.addEventListener('click', () => this.clearTerminal());
         this.sendBtn.addEventListener('click', () => this.sendCommand());
         
@@ -46,6 +44,11 @@ class SerialMonitor {
     async connect() {
         try {
             console.log('Iniciando conexión serial...');
+            
+            // Si ya está conectado, desconectar primero
+            if (this.isConnected) {
+                await this.handleDisconnection();
+            }
             
             // Mostrar mensaje de ayuda
             this.showMessage('🔄 Buscando puertos seriales disponibles...', 'info');
@@ -78,6 +81,9 @@ class SerialMonitor {
             this.updateUI();
             
             this.showMessage('✅ Conectado - Listo para recibir comandos', 'success');
+            
+            // Actualizar texto del botón de conexión
+            this.connectBtn.textContent = '🔄 Reconectar';
             
             // Iniciar lectura en segundo plano
             this.startReading().catch(error => {
@@ -277,11 +283,6 @@ class SerialMonitor {
         }
     }
 
-    async disconnect() {
-        console.log('Desconexión manual solicitada');
-        this.handleDisconnection();
-    }
-
     clearTerminal() {
         if (this.terminal) {
             this.terminal.innerHTML = '';
@@ -291,8 +292,8 @@ class SerialMonitor {
 
     updateUI() {
         if (this.isConnected) {
-            this.connectBtn.disabled = true;
-            this.disconnectBtn.disabled = false;
+            this.connectBtn.disabled = false;
+            this.connectBtn.textContent = '🔄 Reconectar';
             this.sendBtn.disabled = false;
             this.commandInput.disabled = false;
             
@@ -300,7 +301,7 @@ class SerialMonitor {
             this.status.innerHTML = '<span class="status-icon">🟢</span><span class="status-text">Conectado</span>';
         } else {
             this.connectBtn.disabled = false;
-            this.disconnectBtn.disabled = true;
+            this.connectBtn.textContent = '🔗 Conectar Puerto Serial';
             this.sendBtn.disabled = true;
             this.commandInput.disabled = true;
             
@@ -333,4 +334,3 @@ document.addEventListener('DOMContentLoaded', () => {
     window.serialMonitor = new SerialMonitor();
     console.log('Serial Monitor inicializado');
 });
-
