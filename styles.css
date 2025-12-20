@@ -344,3 +344,45 @@ details li {
 .footer a:hover {
     text-decoration: underline;
 }
+
+/* Estilos para el campo de baudrate personalizado */
+#customBaudrate {
+    transition: border-color 0.3s ease;
+}
+
+#customBaudrate:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.baudrate-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Responsive para baudrates */
+@media (max-width: 768px) {
+    .baudrate-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    #baudrate, #customBaudrate {
+        width: 100%;
+    }
+}
+
+/* Mensajes de validación */
+.validation-success {
+    border-color: #51cf66 !important;
+}
+
+.validation-warning {
+    border-color: #ffa500 !important;
+}
+
+.validation-error {
+    border-color: #ff6b6b !important;
+}
