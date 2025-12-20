@@ -21,12 +21,33 @@
             
             <div class="controls">
                 <button id="connectBtn" class="btn btn-primary">🔗 Conectar Puerto Serial</button>
-                <select id="baudrate" class="select">
-                    <option value="9600">9600 baud</option>
-                    <option value="115200" selected>115200 baud</option>
-                    <option value="57600">57600 baud</option>
-                    <option value="38400">38400 baud</option>
-                </select>
+                
+                <div class="baudrate-container" style="display: flex; gap: 10px; align-items: center;">
+                    <select id="baudrate" class="select" style="min-width: 140px;">
+                        <option value="300">300 baud</option>
+                        <option value="1200">1200 baud</option>
+                        <option value="2400">2400 baud</option>
+                        <option value="4800">4800 baud</option>
+                        <option value="9600">9600 baud</option>
+                        <option value="14400">14400 baud</option>
+                        <option value="19200">19200 baud</option>
+                        <option value="28800">28800 baud</option>
+                        <option value="38400">38400 baud</option>
+                        <option value="57600">57600 baud</option>
+                        <option value="115200" selected>115200 baud</option>
+                        <option value="230400">230400 baud</option>
+                        <option value="460800">460800 baud</option>
+                        <option value="921600">921600 baud</option>
+                        <option value="custom">Personalizado...</option>
+                    </select>
+                    
+                    <div id="customBaudrateContainer" style="display: none;">
+                        <input type="number" id="customBaudrate" class="select" 
+                               placeholder="Ej: 250000" min="300" max="4000000" 
+                               style="width: 120px; padding: 11px;">
+                        <span style="white-space: nowrap;">baud</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -56,10 +77,12 @@
                     <li>Conecta tu sistema via USB</li>
                     <li>Haz clic en "Conectar Puerto Serial"</li>
                     <li>Selecciona el puerto de tu sistema en el diálogo</li>
+                    <li>Selecciona la velocidad de baudrate o escribe un valor personalizado</li>
                     <li>Usa el botón "Ocultar TS" / "Mostrar TS" para alternar la visualización del timestamp</li>
                     <li>Usa el botón "Pausar Scroll" / "Activar Scroll" para controlar el movimiento automático del scroll</li>     
                     <li>Usa el botón "Limpiar" para borrar pantalla</li>  
                 </ol>
+                <p><strong>Baudrates comunes:</strong> 300, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600</p>
                 <p><strong>Requisitos:</strong> Chrome/Brave/Opera/Edge 89+ en Windows/Mac/Linux</p>
             </details>
         </div>
