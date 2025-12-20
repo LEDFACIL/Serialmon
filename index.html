@@ -34,12 +34,19 @@
             <div class="terminal-header">
                 <div class="terminal-header-left">
                     <span>Terminal</span>
-                    <div class="scroll-status" id="scrollStatus">
-                        <span class="scroll-icon">🔽</span>
-                        <span class="scroll-text">Auto Scroll</span>
+                    <div class="header-status">
+                        <div class="timestamp-status" id="timestampStatus">
+                            <span class="timestamp-icon">🕐</span>
+                            <span class="timestamp-text">Timestamp ON</span>
+                        </div>
+                        <div class="scroll-status" id="scrollStatus">
+                            <span class="scroll-icon">🔽</span>
+                            <span class="scroll-text">Auto Scroll</span>
+                        </div>
                     </div>
                 </div>
                 <div class="terminal-header-right">
+                    <button id="toggleTimestampBtn" class="btn btn-small" title="Alternar timestamp">🕐 Ocultar TS</button>
                     <button id="toggleScrollBtn" class="btn btn-small" title="Alternar scroll automático">⏸️ Pausar Scroll</button>
                     <button id="clearBtn" class="btn btn-small">🗑️ Limpiar</button>
                 </div>
@@ -59,6 +66,7 @@
                     <li>Conecta tu sistema via USB</li>
                     <li>Haz clic en "Conectar Puerto Serial"</li>
                     <li>Selecciona el puerto de tu sistema en el diálogo</li>
+                    <li>Usa el botón "Ocultar TS" / "Mostrar TS" para alternar la visualización del timestamp</li>
                     <li>Usa el botón "Pausar Scroll" / "Activar Scroll" para controlar el movimiento automático del scroll</li>     
                     <li>Usa el botón "Limpiar" para borrar pantalla</li>  
                 </ol>
@@ -81,5 +89,3 @@
     </script>
 </body>
 </html>
-
-
