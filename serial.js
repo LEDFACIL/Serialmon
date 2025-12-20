@@ -5,12 +5,13 @@ class SerialMonitor {
         this.writer = null;
         this.isConnected = false;
         this.inputBuffer = '';
-        this.autoScroll = true; // Scroll automático activado por defecto
-        this.showTimestamp = true; // Timestamp activado por defecto
+        this.autoScroll = true;
+        this.showTimestamp = true;
         
         this.initializeElements();
         this.attachEventListeners();
         this.checkBrowserSupport();
+        this.setupBaudrateHandlers();
     }
 
     initializeElements() {
@@ -21,8 +22,52 @@ class SerialMonitor {
         this.terminal = document.getElementById('terminal');
         this.status = document.getElementById('status');
         this.baudrateSelect = document.getElementById('baudrate');
+        this.customBaudrateContainer = document.getElementById('customBaudrateContainer');
+        this.customBaudrateInput = document.getElementById('customBaudrate');
         this.toggleScrollBtn = document.getElementById('toggleScrollBtn');
         this.toggleTimestampBtn = document.getElementById('toggleTimestampBtn');
+    }
+
+    setupBaudrateHandlers() {
+        // Manejar cambio en el selector de baudrates
+        this.baudrateSelect.addEventListener('change', (e) => {
+            if (e.target.value === 'custom') {
+                // Mostrar campo para baudrate personalizado
+                this.customBaudrateContainer.style.display = 'flex';
+                this.customBaudrateInput.focus();
+            } else {
+                // Ocultar campo personalizado
+                this.customBaudrateContainer.style.display = 'none';
+            }
+        });
+
+        // Validar baudrate personalizado mientras se escribe
+        this.customBaudrateInput.addEventListener('input', (e) => {
+            let value = parseInt(e.target.value);
+            if (isNaN(value) || value < 300) {
+                e.target.style.borderColor = '#ff6b6b';
+            } else if (value > 4000000) {
+                e.target.style.borderColor = '#ffa500';
+                this.showMessage('⚠️ Baudrate muy alto. Algunos sistemas pueden no soportarlo.', 'error');
+            } else {
+                e.target.style.borderColor = '#51cf66';
+            }
+        });
+
+        // Guardar baudrate personalizado cuando pierde el foco
+        this.customBaudrateInput.addEventListener('blur', (e) => {
+            let value = parseInt(e.target.value);
+            if (!isNaN(value) && value >= 300) {
+                this.showMessage(`✅ Baudrate personalizado configurado a ${value}`, 'success');
+            }
+        });
+
+        // Permitir Enter en baudrate personalizado
+        this.customBaudrateInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.customBaudrateInput.blur();
+            }
+        });
     }
 
     attachEventListeners() {
@@ -36,36 +81,52 @@ class SerialMonitor {
             if (e.key === 'Enter') this.sendCommand();
         });
         
-        // Permitir que el usuario haga scroll manual cuando quiera
         this.terminal.addEventListener('scroll', () => {
-            // Si el usuario está scrolleando manualmente y está cerca del final,
-            // podríamos considerar reactivar el auto-scroll
             if (!this.autoScroll) {
                 const isNearBottom = this.terminal.scrollHeight - this.terminal.scrollTop <= this.terminal.clientHeight + 50;
                 if (isNearBottom) {
-                    // El usuario scrolleó hasta el final, podríamos reactivar auto-scroll
-                    // Pero lo dejamos como decisión del usuario
+                    // Opcional: Podrías reactivar auto-scroll aquí si quieres
                 }
             }
         });
+    }
+
+    getSelectedBaudrate() {
+        const selectedValue = this.baudrateSelect.value;
+        
+        if (selectedValue === 'custom') {
+            // Obtener valor del campo personalizado
+            const customValue = parseInt(this.customBaudrateInput.value);
+            
+            // Validar el valor personalizado
+            if (isNaN(customValue) || customValue < 300) {
+                this.showError('❌ Baudrate personalizado inválido. Usa un valor de 300 o mayor.');
+                return 115200; // Valor por defecto si es inválido
+            }
+            
+            // Limitar a un máximo razonable (4M baud)
+            if (customValue > 4000000) {
+                this.showError('⚠️ Baudrate demasiado alto. Se usará 4000000 como máximo.');
+                return 4000000;
+            }
+            
+            return customValue;
+        }
+        
+        return parseInt(selectedValue);
     }
 
     toggleAutoScroll() {
         this.autoScroll = !this.autoScroll;
         
         if (this.autoScroll) {
-            // Activar scroll automático
             this.toggleScrollBtn.innerHTML = '<span class="scroll-icon">⏸️</span> Pausar Scroll';
             this.toggleScrollBtn.title = "Pausar scroll automático";
-            
-            // Si está activado, hacer scroll al final inmediatamente
             this.autoScrollToBottom();
             this.showMessage('✅ Scroll automático activado', 'success');
         } else {
-            // Desactivar scroll automático
             this.toggleScrollBtn.innerHTML = '<span class="scroll-icon">▶️</span> Activar Scroll';
             this.toggleScrollBtn.title = "Activar scroll automático";
-            
             this.showMessage('⏸️ Scroll automático pausado', 'info');
         }
     }
@@ -74,16 +135,12 @@ class SerialMonitor {
         this.showTimestamp = !this.showTimestamp;
         
         if (this.showTimestamp) {
-            // Activar timestamp
             this.toggleTimestampBtn.innerHTML = '<span class="timestamp-icon">🕐</span> Ocultar TS';
             this.toggleTimestampBtn.title = "Ocultar timestamp";
-            
             this.showMessage('✅ Timestamp activado', 'success');
         } else {
-            // Desactivar timestamp
             this.toggleTimestampBtn.innerHTML = '<span class="timestamp-icon">🕐</span> Mostrar TS';
             this.toggleTimestampBtn.title = "Mostrar timestamp";
-            
             this.showMessage('⏱️ Timestamp desactivado', 'info');
         }
     }
@@ -102,22 +159,24 @@ class SerialMonitor {
         try {
             console.log('Iniciando conexión serial...');
             
+            // Obtener baudrate seleccionado
+            const baudRate = this.getSelectedBaudrate();
+            
             // Si ya está conectado, desconectar primero
             if (this.isConnected) {
                 await this.handleDisconnection();
             }
             
-            // Mostrar mensaje de ayuda
-            this.showMessage('🔄 Buscando puertos seriales disponibles...', 'info');
+            // Mostrar mensaje con baudrate seleccionado
+            this.showMessage(`🔄 Buscando puertos seriales a ${baudRate} baud...`, 'info');
             
             // Solicitar puerto al usuario
             this.port = await navigator.serial.requestPort();
             console.log('Puerto seleccionado:', this.port);
             
-            const baudRate = parseInt(this.baudrateSelect.value);
             this.showMessage(`🔧 Configurando puerto a ${baudRate} baud...`, 'info');
             
-            // Configurar el puerto
+            // Configurar el puerto con el baudrate seleccionado
             await this.port.open({ 
                 baudRate: baudRate,
                 dataBits: 8,
@@ -126,7 +185,7 @@ class SerialMonitor {
                 flowControl: 'none'
             });
             
-            console.log('Puerto abierto exitosamente');
+            console.log(`Puerto abierto exitosamente a ${baudRate} baud`);
             
             // Configurar evento de desconexión
             this.port.addEventListener('disconnect', () => {
@@ -137,7 +196,7 @@ class SerialMonitor {
             this.isConnected = true;
             this.updateUI();
             
-            this.showMessage('✅ Conectado - Listo para recibir comandos', 'success');
+            this.showMessage(`✅ Conectado a ${baudRate} baud - Listo para recibir comandos`, 'success');
             
             // Actualizar texto del botón de conexión
             this.connectBtn.textContent = '🔄 Reconectar';
@@ -156,6 +215,8 @@ class SerialMonitor {
                 this.showError('❌ El puerto ya está abierto');
             } else if (error.name === 'NetworkError') {
                 this.showError('❌ Error de red al acceder al puerto');
+            } else if (error.name === 'InvalidAccessError') {
+                this.showError('❌ Baudrate no soportado por el dispositivo');
             } else {
                 this.showError(`❌ Error de conexión: ${error.message}`);
             }
@@ -218,18 +279,16 @@ class SerialMonitor {
         
         // Si el último carácter no es \n, la última línea está incompleta
         if (!text.endsWith('\n') && lines.length > 0) {
-            this.inputBuffer = lines.pop(); // Guardar la línea incompleta
+            this.inputBuffer = lines.pop();
         } else {
-            this.inputBuffer = ''; // Reset si terminó con \n
+            this.inputBuffer = '';
         }
         
         // Procesar líneas completas
         lines.forEach(line => {
             if (line === '') {
-                // Línea vacía, solo mostrar salto de línea
                 this.displayData('\n', 'incoming');
             } else {
-                // Mostrar línea con salto de línea
                 this.displayData(line + '\n', 'incoming');
             }
         });
@@ -242,11 +301,9 @@ class SerialMonitor {
             const lineDiv = document.createElement('div');
             lineDiv.className = 'terminal-line';
             
-            // Obtener timestamp si está activado
             const timestamp = this.showTimestamp ? new Date().toLocaleTimeString() : '';
             
             if (type === 'outgoing') {
-                // Comando enviado por el usuario
                 if (this.showTimestamp) {
                     lineDiv.textContent = `[${timestamp}] > ${text}`;
                 } else {
@@ -254,7 +311,6 @@ class SerialMonitor {
                 }
                 lineDiv.style.color = '#ffa500';
             } else if (type === 'error') {
-                // Mensaje de error
                 if (this.showTimestamp) {
                     lineDiv.textContent = `[${timestamp}] ${text}`;
                 } else {
@@ -262,7 +318,6 @@ class SerialMonitor {
                 }
                 lineDiv.style.color = '#ff6b6b';
             } else if (type === 'success') {
-                // Mensaje de éxito
                 if (this.showTimestamp) {
                     lineDiv.textContent = `[${timestamp}] ${text}`;
                 } else {
@@ -270,7 +325,6 @@ class SerialMonitor {
                 }
                 lineDiv.style.color = '#51cf66';
             } else {
-                // Datos entrantes del ESP32
                 if (this.showTimestamp) {
                     lineDiv.textContent = `[${timestamp}] ${text}`;
                 } else {
@@ -281,7 +335,6 @@ class SerialMonitor {
             
             this.terminal.appendChild(lineDiv);
             
-            // Solo hacer auto-scroll si está activado
             if (this.autoScroll) {
                 this.autoScrollToBottom();
             }
@@ -294,7 +347,6 @@ class SerialMonitor {
     autoScrollToBottom() {
         if (!this.terminal) return;
         
-        // Scroll suave al final
         setTimeout(() => {
             this.terminal.scrollTop = this.terminal.scrollHeight;
         }, 10);
@@ -310,19 +362,16 @@ class SerialMonitor {
         if (!command) return;
 
         try {
-            // Mostrar comando en terminal
             this.displayData(command, 'outgoing');
             
-            // Enviar comando al ESP32
             const encoder = new TextEncoder();
-            const data = encoder.encode(command + '\r\n'); // \r\n para compatibilidad
+            const data = encoder.encode(command + '\r\n');
             
             this.writer = this.port.writable.getWriter();
             await this.writer.write(data);
             this.writer.releaseLock();
             this.writer = null;
             
-            // Limpiar input
             this.commandInput.value = '';
             this.commandInput.focus();
             
@@ -337,7 +386,6 @@ class SerialMonitor {
             console.log('Manejando desconexión...');
             this.isConnected = false;
             
-            // Limpiar recursos
             if (this.reader) {
                 this.reader.cancel().catch(() => {});
                 this.reader.releaseLock().catch(() => {});
@@ -366,7 +414,6 @@ class SerialMonitor {
         }
         this.inputBuffer = '';
         
-        // Si el auto-scroll está activado, asegurarse de que esté al inicio
         if (this.autoScroll) {
             this.autoScrollToBottom();
         }
@@ -380,6 +427,8 @@ class SerialMonitor {
             this.commandInput.disabled = false;
             this.toggleScrollBtn.disabled = false;
             this.toggleTimestampBtn.disabled = false;
+            this.baudrateSelect.disabled = true;
+            this.customBaudrateInput.disabled = true;
             
             this.status.className = 'status connected';
             this.status.innerHTML = '<span class="status-icon">🟢</span><span class="status-text">Conectado</span>';
@@ -390,6 +439,8 @@ class SerialMonitor {
             this.commandInput.disabled = true;
             this.toggleScrollBtn.disabled = true;
             this.toggleTimestampBtn.disabled = true;
+            this.baudrateSelect.disabled = false;
+            this.customBaudrateInput.disabled = false;
             
             this.status.className = 'status disconnected';
             this.status.innerHTML = '<span class="status-icon">🔴</span><span class="status-text">Desconectado</span>';
