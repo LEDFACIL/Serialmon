@@ -141,6 +141,36 @@ header p {
     font-weight: 600;
 }
 
+.terminal-header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.terminal-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.scroll-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    font-size: 12px;
+}
+
+.scroll-status.scrolling {
+    background: rgba(0, 123, 255, 0.2);
+}
+
+.scroll-status.paused {
+    background: rgba(108, 117, 125, 0.2);
+}
+
 .terminal {
     height: 500px;
     background: #1a1a1a;
@@ -281,6 +311,18 @@ details li {
         flex-direction: column;
     }
     
+    .terminal-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    
+    .terminal-header-left, 
+    .terminal-header-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
     .terminal {
         height: 400px;
         font-size: 14px;
@@ -320,8 +362,3 @@ details li {
 .footer a:hover {
     text-decoration: underline;
 }
-
-
-
-
-
