@@ -32,8 +32,17 @@
 
         <div class="terminal-container">
             <div class="terminal-header">
-                <span>Terminal</span>
-                <button id="clearBtn" class="btn btn-small">🗑️ Limpiar</button>
+                <div class="terminal-header-left">
+                    <span>Terminal</span>
+                    <div class="scroll-status" id="scrollStatus">
+                        <span class="scroll-icon">🔽</span>
+                        <span class="scroll-text">Auto Scroll</span>
+                    </div>
+                </div>
+                <div class="terminal-header-right">
+                    <button id="toggleScrollBtn" class="btn btn-small btn-secondary" title="Alternar scroll automático">⏸️ Pausar Scroll</button>
+                    <button id="clearBtn" class="btn btn-small">🗑️ Limpiar</button>
+                </div>
             </div>
             <div id="terminal" class="terminal"></div>
         </div>
@@ -50,7 +59,8 @@
                     <li>Conecta tu sistema via USB</li>
                     <li>Haz clic en "Conectar Puerto Serial"</li>
                     <li>Selecciona el puerto de tu sistema en el diálogo</li>
-                    <li>Usalo como a cualquier serial monitor, recibe y envía</li>
+                    <li>Usa el botón "Pausar Scroll" para detener el desplazamiento automático cuando recibas muchos datos</li>
+                    <li>Haz clic nuevamente en "Activar Scroll" para volver al modo automático</li>
                 </ol>
                 <p><strong>Requisitos:</strong> Chrome/Edge 89+ en Windows/Mac/Linux</p>
             </details>
