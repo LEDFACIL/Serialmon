@@ -22,9 +22,7 @@ class SerialMonitor {
         this.status = document.getElementById('status');
         this.baudrateSelect = document.getElementById('baudrate');
         this.toggleScrollBtn = document.getElementById('toggleScrollBtn');
-        this.scrollStatus = document.getElementById('scrollStatus');
         this.toggleTimestampBtn = document.getElementById('toggleTimestampBtn');
-        this.timestampStatus = document.getElementById('timestampStatus');
     }
 
     attachEventListeners() {
@@ -59,8 +57,6 @@ class SerialMonitor {
             // Activar scroll automático
             this.toggleScrollBtn.innerHTML = '<span class="scroll-icon">⏸️</span> Pausar Scroll';
             this.toggleScrollBtn.title = "Pausar scroll automático";
-            this.scrollStatus.innerHTML = '<span class="scroll-icon">🔽</span> Auto Scroll';
-            this.scrollStatus.className = 'scroll-status scrolling';
             
             // Si está activado, hacer scroll al final inmediatamente
             this.autoScrollToBottom();
@@ -69,8 +65,6 @@ class SerialMonitor {
             // Desactivar scroll automático
             this.toggleScrollBtn.innerHTML = '<span class="scroll-icon">▶️</span> Activar Scroll';
             this.toggleScrollBtn.title = "Activar scroll automático";
-            this.scrollStatus.innerHTML = '<span class="scroll-icon">⏸️</span> Scroll Pausado';
-            this.scrollStatus.className = 'scroll-status paused';
             
             this.showMessage('⏸️ Scroll automático pausado', 'info');
         }
@@ -83,16 +77,12 @@ class SerialMonitor {
             // Activar timestamp
             this.toggleTimestampBtn.innerHTML = '<span class="timestamp-icon">🕐</span> Ocultar TS';
             this.toggleTimestampBtn.title = "Ocultar timestamp";
-            this.timestampStatus.innerHTML = '<span class="timestamp-icon">🕐</span> Timestamp ON';
-            this.timestampStatus.className = 'timestamp-status active';
             
             this.showMessage('✅ Timestamp activado', 'success');
         } else {
             // Desactivar timestamp
             this.toggleTimestampBtn.innerHTML = '<span class="timestamp-icon">🕐</span> Mostrar TS';
             this.toggleTimestampBtn.title = "Mostrar timestamp";
-            this.timestampStatus.innerHTML = '<span class="timestamp-icon">⏱️</span> Timestamp OFF';
-            this.timestampStatus.className = 'timestamp-status inactive';
             
             this.showMessage('⏱️ Timestamp desactivado', 'info');
         }
