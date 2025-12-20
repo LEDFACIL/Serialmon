@@ -5,6 +5,7 @@ class SerialMonitor {
         this.writer = null;
         this.isConnected = false;
         this.inputBuffer = '';
+        this.autoScroll = true; // Scroll automático activado por defecto
         
         this.initializeElements();
         this.attachEventListeners();
@@ -19,16 +20,56 @@ class SerialMonitor {
         this.terminal = document.getElementById('terminal');
         this.status = document.getElementById('status');
         this.baudrateSelect = document.getElementById('baudrate');
+        this.toggleScrollBtn = document.getElementById('toggleScrollBtn');
+        this.scrollStatus = document.getElementById('scrollStatus');
     }
 
     attachEventListeners() {
         this.connectBtn.addEventListener('click', () => this.connect());
         this.clearBtn.addEventListener('click', () => this.clearTerminal());
         this.sendBtn.addEventListener('click', () => this.sendCommand());
+        this.toggleScrollBtn.addEventListener('click', () => this.toggleAutoScroll());
         
         this.commandInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.sendCommand();
         });
+        
+        // Permitir que el usuario haga scroll manual cuando quiera
+        this.terminal.addEventListener('scroll', () => {
+            // Si el usuario está scrolleando manualmente y está cerca del final,
+            // podríamos considerar reactivar el auto-scroll
+            if (!this.autoScroll) {
+                const isNearBottom = this.terminal.scrollHeight - this.terminal.scrollTop <= this.terminal.clientHeight + 50;
+                if (isNearBottom) {
+                    // El usuario scrolleó hasta el final, podríamos reactivar auto-scroll
+                    // Pero lo dejamos como decisión del usuario
+                }
+            }
+        });
+    }
+
+    toggleAutoScroll() {
+        this.autoScroll = !this.autoScroll;
+        
+        if (this.autoScroll) {
+            // Activar scroll automático
+            this.toggleScrollBtn.innerHTML = '<span class="scroll-icon">⏸️</span> Pausar Scroll';
+            this.toggleScrollBtn.title = "Pausar scroll automático";
+            this.scrollStatus.innerHTML = '<span class="scroll-icon">🔽</span> Auto Scroll';
+            this.scrollStatus.className = 'scroll-status scrolling';
+            
+            // Si está activado, hacer scroll al final inmediatamente
+            this.autoScrollToBottom();
+            this.showMessage('✅ Scroll automático activado', 'success');
+        } else {
+            // Desactivar scroll automático
+            this.toggleScrollBtn.innerHTML = '<span class="scroll-icon">▶️</span> Activar Scroll';
+            this.toggleScrollBtn.title = "Activar scroll automático";
+            this.scrollStatus.innerHTML = '<span class="scroll-icon">⏸️</span> Scroll Pausado';
+            this.scrollStatus.className = 'scroll-status paused';
+            
+            this.showMessage('⏸️ Scroll automático pausado', 'info');
+        }
     }
 
     checkBrowserSupport() {
@@ -207,14 +248,18 @@ class SerialMonitor {
             }
             
             this.terminal.appendChild(lineDiv);
-            this.autoScroll();
+            
+            // Solo hacer auto-scroll si está activado
+            if (this.autoScroll) {
+                this.autoScrollToBottom();
+            }
             
         } catch (error) {
             console.error('Error en displayData:', error);
         }
     }
 
-    autoScroll() {
+    autoScrollToBottom() {
         if (!this.terminal) return;
         
         // Scroll suave al final
@@ -288,6 +333,11 @@ class SerialMonitor {
             this.terminal.innerHTML = '';
         }
         this.inputBuffer = '';
+        
+        // Si el auto-scroll está activado, asegurarse de que esté al inicio
+        if (this.autoScroll) {
+            this.autoScrollToBottom();
+        }
     }
 
     updateUI() {
@@ -296,6 +346,7 @@ class SerialMonitor {
             this.connectBtn.textContent = '🔄 Reconectar';
             this.sendBtn.disabled = false;
             this.commandInput.disabled = false;
+            this.toggleScrollBtn.disabled = false;
             
             this.status.className = 'status connected';
             this.status.innerHTML = '<span class="status-icon">🟢</span><span class="status-text">Conectado</span>';
@@ -304,6 +355,7 @@ class SerialMonitor {
             this.connectBtn.textContent = '🔗 Conectar Puerto Serial';
             this.sendBtn.disabled = true;
             this.commandInput.disabled = true;
+            this.toggleScrollBtn.disabled = true;
             
             this.status.className = 'status disconnected';
             this.status.innerHTML = '<span class="status-icon">🔴</span><span class="status-text">Desconectado</span>';
