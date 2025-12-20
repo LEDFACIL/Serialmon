@@ -6,6 +6,7 @@ class SerialMonitor {
         this.isConnected = false;
         this.inputBuffer = '';
         this.autoScroll = true; // Scroll automático activado por defecto
+        this.showTimestamp = true; // Timestamp activado por defecto
         
         this.initializeElements();
         this.attachEventListeners();
@@ -22,6 +23,8 @@ class SerialMonitor {
         this.baudrateSelect = document.getElementById('baudrate');
         this.toggleScrollBtn = document.getElementById('toggleScrollBtn');
         this.scrollStatus = document.getElementById('scrollStatus');
+        this.toggleTimestampBtn = document.getElementById('toggleTimestampBtn');
+        this.timestampStatus = document.getElementById('timestampStatus');
     }
 
     attachEventListeners() {
@@ -29,6 +32,7 @@ class SerialMonitor {
         this.clearBtn.addEventListener('click', () => this.clearTerminal());
         this.sendBtn.addEventListener('click', () => this.sendCommand());
         this.toggleScrollBtn.addEventListener('click', () => this.toggleAutoScroll());
+        this.toggleTimestampBtn.addEventListener('click', () => this.toggleTimestamp());
         
         this.commandInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.sendCommand();
@@ -69,6 +73,28 @@ class SerialMonitor {
             this.scrollStatus.className = 'scroll-status paused';
             
             this.showMessage('⏸️ Scroll automático pausado', 'info');
+        }
+    }
+
+    toggleTimestamp() {
+        this.showTimestamp = !this.showTimestamp;
+        
+        if (this.showTimestamp) {
+            // Activar timestamp
+            this.toggleTimestampBtn.innerHTML = '<span class="timestamp-icon">🕐</span> Ocultar TS';
+            this.toggleTimestampBtn.title = "Ocultar timestamp";
+            this.timestampStatus.innerHTML = '<span class="timestamp-icon">🕐</span> Timestamp ON';
+            this.timestampStatus.className = 'timestamp-status active';
+            
+            this.showMessage('✅ Timestamp activado', 'success');
+        } else {
+            // Desactivar timestamp
+            this.toggleTimestampBtn.innerHTML = '<span class="timestamp-icon">🕐</span> Mostrar TS';
+            this.toggleTimestampBtn.title = "Mostrar timestamp";
+            this.timestampStatus.innerHTML = '<span class="timestamp-icon">⏱️</span> Timestamp OFF';
+            this.timestampStatus.className = 'timestamp-status inactive';
+            
+            this.showMessage('⏱️ Timestamp desactivado', 'info');
         }
     }
 
@@ -226,24 +252,40 @@ class SerialMonitor {
             const lineDiv = document.createElement('div');
             lineDiv.className = 'terminal-line';
             
+            // Obtener timestamp si está activado
+            const timestamp = this.showTimestamp ? new Date().toLocaleTimeString() : '';
+            
             if (type === 'outgoing') {
                 // Comando enviado por el usuario
-                const timestamp = new Date().toLocaleTimeString();
-                lineDiv.textContent = `[${timestamp}] > ${text}`;
+                if (this.showTimestamp) {
+                    lineDiv.textContent = `[${timestamp}] > ${text}`;
+                } else {
+                    lineDiv.textContent = `> ${text}`;
+                }
                 lineDiv.style.color = '#ffa500';
             } else if (type === 'error') {
                 // Mensaje de error
-                const timestamp = new Date().toLocaleTimeString();
-                lineDiv.textContent = `[${timestamp}] ${text}`;
+                if (this.showTimestamp) {
+                    lineDiv.textContent = `[${timestamp}] ${text}`;
+                } else {
+                    lineDiv.textContent = text;
+                }
                 lineDiv.style.color = '#ff6b6b';
             } else if (type === 'success') {
                 // Mensaje de éxito
-                const timestamp = new Date().toLocaleTimeString();
-                lineDiv.textContent = `[${timestamp}] ${text}`;
+                if (this.showTimestamp) {
+                    lineDiv.textContent = `[${timestamp}] ${text}`;
+                } else {
+                    lineDiv.textContent = text;
+                }
                 lineDiv.style.color = '#51cf66';
             } else {
-                // Datos entrantes del ESP32 - SIN TIMESTAMP
-                lineDiv.textContent = text;
+                // Datos entrantes del ESP32
+                if (this.showTimestamp) {
+                    lineDiv.textContent = `[${timestamp}] ${text}`;
+                } else {
+                    lineDiv.textContent = text;
+                }
                 lineDiv.style.color = '#87ceeb';
             }
             
@@ -347,6 +389,7 @@ class SerialMonitor {
             this.sendBtn.disabled = false;
             this.commandInput.disabled = false;
             this.toggleScrollBtn.disabled = false;
+            this.toggleTimestampBtn.disabled = false;
             
             this.status.className = 'status connected';
             this.status.innerHTML = '<span class="status-icon">🟢</span><span class="status-text">Conectado</span>';
@@ -356,6 +399,7 @@ class SerialMonitor {
             this.sendBtn.disabled = true;
             this.commandInput.disabled = true;
             this.toggleScrollBtn.disabled = true;
+            this.toggleTimestampBtn.disabled = true;
             
             this.status.className = 'status disconnected';
             this.status.innerHTML = '<span class="status-icon">🔴</span><span class="status-text">Desconectado</span>';
